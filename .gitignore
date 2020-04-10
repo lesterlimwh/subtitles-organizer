@@ -1,8 +1,15 @@
 # config
 config.json
 
+# logs
+cache.pkl
+no-subs-found.log
+
 # test
 /test
 
 # env
 /env
+
+# os native
+.DS_Store
