@@ -1,0 +1,8 @@
+# config
+config.json
+
+# test
+/test
+
+# env
+/env
