@@ -1,5 +1,6 @@
 from pythonopensubtitles.utils import File
 from pythonopensubtitles.opensubtitles import OpenSubtitles
+import getpass
 import json
 import os
 import sys
@@ -23,37 +24,39 @@ def main():
         ''')
         quit()
 
+    # CLI parameters
     subtitleLanguageIDs = sys.argv[1]
+
+    # Prompt user login
+    username = getpass.getuser()
+    password = getpass.getpass()
 
     # clear previous log
     clearLog()
 
-    # bootstrap OST
+    # bootstrap OST with config file specifications
     with open("config.json") as config:
         config_data = json.load(config)
     ost = OpenSubtitles()
-    ost.login(config_data["username"], config_data["password"])
+    ost.login(username, password)
 
-    # grab all movie folder names in the path specified in config.json
-    base_directory = config_data["path"]
-    for movie_directory in os.listdir(base_directory):
-        for file in os.listdir(os.path.join(base_directory, movie_directory)):
-            filename = os.fsdecode(file)
-            if filename.endswith('.mkv') or filename.endswith('.mp4'):
-                ost_data = ost.search_subtitles([{
-                    'sublanguageid': subtitleLanguageIDs,
-                    'query': filename
-                    }])
-                if len(ost_data) > 0:
-                    id_subtitle_file = ost_data[0].get('IDSubtitleFile')
-                    subtitle_file_name = filename + '.zh'
-                    ost.download_subtitles(
-                        [id_subtitle_file],
-                        override_filenames={id_subtitle_file : subtitle_file_name},
-                        output_directory=os.path.join(base_directory, movie_directory),
-                        extension='srt')
-                else:
-                    # log the movies that need manual subtitles
-                    writeLog(filename)
+    # iterate all torrent files in the path specified in config.json
+    directory = config_data["path"]
+    for filename in os.listdir(directory):
+        if filename.endswith('.torrent'):
+            query_filename = filename.split(".torrent", 1)[0]
+            ost_data = ost.search_subtitles([{
+                'sublanguageid': subtitleLanguageIDs,
+                'query': query_filename}])
+            if ost_data:
+                id_subtitle_file = ost_data[0].get('IDSubtitleFile')
+                subtitle_file_name = query_filename + '.zh.srt'
+                ost.download_subtitles(
+                    [id_subtitle_file],
+                    override_filenames={id_subtitle_file : subtitle_file_name},
+                    extension='srt')
+            else:
+                # log the movies that need manual subtitles
+                writeLog(filename)
 
 main()
