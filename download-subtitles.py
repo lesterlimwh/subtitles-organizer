@@ -44,14 +44,10 @@ def main():
     # CLI parameters
     subtitleLanguageIDs = sys.argv[1]
 
-    # Prompt user login
-    # print("Enter OpenSubtitles login credentials")
-    # username = input("Username: ")
-    # password = getpass.getpass()
-
-    # DEBUG
-    username = "lesterlimwh"
-    password = "@$6vOx9feMGrlK"
+    Prompt user login
+    print("Enter OpenSubtitles login credentials")
+    username = input("Username: ")
+    password = getpass.getpass()
 
     # clear previous log
     clearLog()
