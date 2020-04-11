@@ -38,12 +38,13 @@ def main():
     print("Scanning movie folders for subtitle files...")
     for subdir, dirs, files in os.walk(base_directory):
         for file in files:
-            print("Found subtitle file: " + file)
             if file.endswith(".en.srt"):
+                print("Found English subtitle file: " + file)
                 key = file.split(".en.srt")[0]
                 cache_en[key] = 'True'
                 continue
             if file.endswith(".zh.srt"):
+                print("Found Chinese subtitle file: " + file)
                 key = file.split(".zh.srt")[0]
                 cache_zh[key] = 'True'
                 continue
