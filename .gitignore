@@ -2,7 +2,8 @@
 config.json
 
 # logs
-cache.pkl
+cache-en.pkl
+cache-zh.pkl
 no-subs-found.log
 
 # test

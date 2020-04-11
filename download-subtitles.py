@@ -8,10 +8,12 @@ import sys
 
 # This script should only be used to download one type of language at a time
 # Subtitles found will be saved in the given directory in the config file
-# Movies that already have subtitles will be recorded in subtitles-cache.json
+# Movies that already have subtitles will be recorded in cache.json
 
 # constants
 LOG_FILE = "no-subs-found.log"
+ENGLISH = 'en'
+CHINESE = 'zh'
 
 # clear the no-subs-found log
 def clearLog():
@@ -23,14 +25,27 @@ def writeLog(filename):
     with open(LOG_FILE, 'a') as log:
         log.write(filename + '\n')
 
+# get the cache file based on language:
+def getCacheFile(language):
+    cache_file = ''
+    if language == CHINESE:
+        cache_file = 'cache-zh.pkl'
+    elif language == ENGLISH:
+        cache_file = 'cache-en.pkl'
+    else:
+        cache_file = 'cache.pkl'
+    return cache_file
+
 # clear and write the cache
-def writeCache(new_cache):
-    with open('cache.pkl', 'wb') as old_cache:
+def writeCache(new_cache, language):
+    cache_file = getCacheFile(language)
+    with open(cache_file, 'wb') as old_cache:
         pickle.dump(new_cache, old_cache, pickle.HIGHEST_PROTOCOL)
 
 # return the cache as a dictionary
-def readCache():
-    with open('cache.pkl', 'rb') as cache:
+def readCache(language):
+    cache_file = getCacheFile(language)
+    with open(cache_file, 'rb') as cache:
         return pickle.load(cache)
 
 def main():
@@ -52,10 +67,13 @@ def main():
     # clear previous log
     clearLog()
 
-    # initialize cache.pkl file if does not exist
-    if not os.path.exists('cache.pkl'):
+    # initialize cache-en.pkl and cache-zh.pkl files if they do not exist
+    if not os.path.exists('cache-en.pkl'):
         empty_dict = {'Dummy Entry': 'True'}
-        writeCache(empty_dict)
+        writeCache(empty_dict, ENGLISH)
+    if not os.path.exists('cache-zh.pkl'):
+        empty_dict = {'Dummy Entry': 'True'}
+        writeCache(empty_dict, CHINESE)
 
     # load config from a JSON file
     with open("config.json") as config_data:
@@ -74,11 +92,16 @@ def main():
     else:
         file_extension = ".srt"
 
+    # get language to use for cache (default to chinese)
+    cache_language = CHINESE
+    if subtitleLanguageIDs == 'en':
+        cache_language = ENGLISH
+
     # iterate all torrent files in the path specified in config.json
-    directory = config["source_path"]
-    cache = readCache()
+    base_directory = config["source_path"]
+    cache = readCache(cache_language)
     print("Searching subtitles for the following movies:")
-    for filename in os.listdir(directory):
+    for filename in os.listdir(base_directory):
         # check if subtitles already downloaded for this movie
         if filename in cache:
             print("Skipping: " + filename)
@@ -95,11 +118,11 @@ def main():
             ost.download_subtitles(
                 [id_subtitle_file],
                 override_filenames = {id_subtitle_file : subtitle_file_name},
-                output_directory = os.path.join(directory, filename),
+                output_directory = os.path.join(base_directory, filename),
                 extension = "srt")
             # successfully downloaded, add entry to cache
             cache[filename] = 'True'
-            writeCache(cache)
+            writeCache(cache, cache_language)
         else:
             print("Failed to download: " + filename)
             # log the movies that need manual subtitles
