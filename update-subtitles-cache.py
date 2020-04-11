@@ -40,13 +40,11 @@ def main():
         for file in files:
             if file.endswith(".en.srt"):
                 print("Found English subtitle file: " + file)
-                key = file.split(".en.srt")[0]
-                cache_en[key] = 'True'
+                cache_en[subdir] = 'True'
                 continue
             if file.endswith(".zh.srt"):
                 print("Found Chinese subtitle file: " + file)
-                key = file.split(".zh.srt")[0]
-                cache_zh[key] = 'True'
+                cache_zh[subdir] = 'True'
                 continue
 
     # update the cache files
