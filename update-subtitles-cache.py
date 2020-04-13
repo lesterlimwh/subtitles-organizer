@@ -38,7 +38,8 @@ def main():
     print("Scanning movie folders for subtitle files...")
     for subdir, dirs, files in os.walk(base_directory):
         for file in files:
-            key = subdir.split('/')[1]
+            temp = subdir.split('/')
+            key = temp[len(temp) - 1]
             if file.endswith(".en.srt"):
                 print("Found English subtitle file: " + file)
                 cache_en[key] = 'True'
