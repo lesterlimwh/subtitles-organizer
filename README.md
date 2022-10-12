@@ -1,4 +1,4 @@
-# Subtitles Automation
+# Subtitles Organizer
 
 Simple Automation written in Python for downloading subtitle files using the OpenSubtitles API.
 
