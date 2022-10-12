@@ -1,6 +1,6 @@
 # Subtitles Automation
 
-A simple automation written using Python to download subtitle files using the OpenSubtitles API.
+Simple Automation written in Python for downloading subtitle files using the OpenSubtitles API.
 
 Steps:
 1. Set the directory of the video files in config.json
